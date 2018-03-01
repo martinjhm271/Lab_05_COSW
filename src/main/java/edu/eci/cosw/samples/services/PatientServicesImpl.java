@@ -18,28 +18,32 @@ package edu.eci.cosw.samples.services;
 
 import edu.eci.cosw.jpa.sample.model.Paciente;
 import edu.eci.cosw.jpa.sample.model.PacienteId;
-import java.util.Date;
+import edu.eci.cosw.samples.persistence.PatientsRepository;
 import java.util.LinkedList;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
  *
  * @author hcadavid
  */
-
-public class PatientServicesStub implements PatientServices{
-
+@Service
+public class PatientServicesImpl implements PatientServices{
+    
+    @Autowired
+    PatientsRepository pr;
+    
     @Override
     public Paciente getPatient(int id, String tipoid) {
-        return new Paciente(new PacienteId(1, "cc"),"Juan Perez",new Date());
+        return pr.findOne(new PacienteId(id,tipoid));
     }
 
     @Override
     public List<Paciente> topPatients(int n) {
-        List<Paciente> lp=new LinkedList<>();
-        lp.add(new Paciente(new PacienteId(1, "cc"),"Juan Perez",new Date()));
-        return lp;
+        List<Paciente> lp=null;
+        lp=pr.findPacienteByNConsults(n);
+        return lp!=null? lp:new LinkedList<>();
     }
     
 }

@@ -19,6 +19,7 @@ package edu.eci.cosw.samples.controllers;
 import edu.eci.cosw.jpa.sample.model.Paciente;
 import edu.eci.cosw.samples.services.PatientServices;
 import edu.eci.cosw.samples.services.ServicesException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,28 +39,38 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/pacientes")
 public class PatientsController {
-    
-    
+
     @Autowired
     PatientServices services;
-    
-    @RequestMapping(path = "/{id}",method = RequestMethod.GET)
+
+    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Paciente> getPaciente(@PathVariable int id) {
         try {
-            Paciente p=services.getPatient(id, "cc");
-            if (p!=null){
-                return ResponseEntity.ok().body(p);        
-            }
-            else{
+            Paciente p = services.getPatient(id, "cc");
+            if (p != null) {
+                return ResponseEntity.ok().body(p);
+            } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            
+
         } catch (ServicesException ex) {
             Logger.getLogger(PatientsController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);            
-        }         
-        
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
-    
+
+    @RequestMapping(path = "/getPatientConsults/{N}", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity getPacienteConsults(@PathVariable int N) {
+        try {
+            List<Paciente> listPatient = services.topPatients(N);
+            return ResponseEntity.ok().body(listPatient);
+        } catch (ServicesException ex) {
+            Logger.getLogger(PatientsController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
